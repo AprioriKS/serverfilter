@@ -11,6 +11,6 @@
     <title>My team</title>
 </head>
 <body>
-<h1 class="Access allowed">Welcome to site!</h1>
+<h1 class="table table_dark">Access allowed</h1>
 </body>
 </html>
