@@ -15,8 +15,6 @@ import util.FileReaderImpl;
 
 @WebFilter("/")
 public class AuthenticationFilter implements Filter {
-    private final Set<String> allowedIp = new HashSet<>();
-    public long modified = -5;
     private FileReaderImpl reader = new FileReaderImpl();
 
     @Override
@@ -28,9 +26,7 @@ public class AuthenticationFilter implements Filter {
 
         String clientIp = request.getRemoteAddr();
 
-        reader.readFromFile("blacklist.txt", allowedIp, modified);
-
-        if (!allowedIp.contains(clientIp)) {
+        if (!reader.isBlok(clientIp)) {
             filterChain.doFilter(request, response);
             return;
         }

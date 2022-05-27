@@ -1,33 +1,46 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class FileReaderImpl {
 
-public long readFromFile(String filePath, Set<String> allowed, long modified) {
-        File file = new File(filePath);
-        long lastModified = file.lastModified();
-        if (lastModified > modified) {
-            try {
-                BufferedReader reader = new BufferedReader(new java.io.FileReader(file));
-                try {
-                    String values = reader.readLine();
-                    while (values != null) {
-                        allowed.add(values);
-                        values = reader.readLine();
-                    }
-                    return lastModified;
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException("Can't open the file " + e);
+    private static String fileName = "ipblacklist.txt";
+    private static Path ipFile;
+    private static FileTime fileTime;
+    private static Set<String> ipList;
+
+
+    public boolean isBlok(String ip) {
+        checkingFile();
+        if (ipList != null && ipList.contains(ip))
+            return true;
+        return false;
+    }
+
+    private void checkingFile() {
+        ipFile = Paths.get(fileName);
+        try {
+            if (ipFile != null) {
+                FileTime curTime = Files.getLastModifiedTime(ipFile, LinkOption.NOFOLLOW_LINKS);
+                if (!curTime.equals(fileTime)) {
+                    fileTime = curTime;
+                    loadingBlackList();
                 }
-            } catch (IOException e) {
-                throw new RuntimeException("Can't read the data from file" + e);
             }
+        } catch (IOException ex) {
+            System.out.println("IP file not found!");
         }
-        return modified;
+    }
+
+    private void loadingBlackList() throws IOException {
+        ipList = Files.lines(ipFile).collect(Collectors.toCollection(TreeSet::new));
     }
 }
