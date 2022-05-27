@@ -28,7 +28,7 @@ public class AuthenticationFilter implements Filter {
 
         String clientIp = request.getRemoteAddr();
 
-        reader.readFromFile("WEB-INF/views/blacklist.txt", allowedIp, modified);
+        reader.readFromFile("blacklist.txt", allowedIp, modified);
 
         if (!allowedIp.contains(clientIp)) {
             filterChain.doFilter(request, response);
